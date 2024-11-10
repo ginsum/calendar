@@ -1,22 +1,31 @@
 "use client";
 
+import useDateStore from "@/store/date";
+import useGetRecruits from "@/query/useGetRecruits";
 import { generatorCalendar } from "@/util";
 import CalendarCell from "./CalendarCell";
+import ModalContainer from "./ModalContainer";
 
 export default function CalendarBody() {
-  const currentMonthDays = generatorCalendar(2024)[10];
+  const { year, month } = useDateStore();
+
+  const currentMonthDays = generatorCalendar(year)[month];
+
+  const { data } = useGetRecruits();
 
   return (
     <div className="flex flex-col w-full items-center justify-items-center gap-3">
       <div className="flex w-full flex-wrap">
-        {currentMonthDays.map(({ month, day }, index) => (
+        {currentMonthDays.map(({ date, day }, index) => (
           <CalendarCell
-            key={`${month}-${day}`}
+            key={date}
             day={day.toLocaleString()}
-            list={["you"]}
+            date={date}
+            list={(data && data[date]) || []}
           />
         ))}
       </div>
+      <ModalContainer data={data} />
     </div>
   );
 }
