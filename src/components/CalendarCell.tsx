@@ -8,8 +8,9 @@ interface CalendarCellProps {
 }
 
 export default function CalendarCell({ day, date, list }: CalendarCellProps) {
-  const { setOpenModal } = useModalStore();
-  const sortList = list?.sort((a) => (a.isStart ? -1 : 0));
+  const { setModalInfo, setIsOpen, clickedIds } = useModalStore();
+  const sortList: RecruitContentType[] =
+    list?.sort((a) => (a.isStart ? -1 : 0)) || [];
 
   return (
     <div className="w-[14.2857%] flex flex-col  border border-l-0 border-t-0 text-zinc-600 text-sm">
@@ -20,11 +21,30 @@ export default function CalendarCell({ day, date, list }: CalendarCellProps) {
         {sortList?.map((content, index) => (
           <div
             key={content.id}
-            className="flex gap-2 cursor-pointer"
-            onClick={() => setOpenModal(sortList, index, date)}
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => {
+              setModalInfo({ sortList, index, date, id: content.id });
+              setIsOpen(true);
+            }}
           >
-            <div>{content.isStart ? "시" : "끝"}</div>
-            <div>{content.company_name}</div>
+            {content.isStart ? (
+              <div className="flex justify-center items-center w-4 h-4 rounded bg-red-400 text-white text-xs">
+                시
+              </div>
+            ) : (
+              <div className="flex justify-center items-center w-4 h-4 rounded bg-zinc-400 text-white text-xs">
+                끝
+              </div>
+            )}
+            <div
+              className={`w-full whitespace-nowrap text-ellipsis overflow-hidden ${
+                clickedIds.includes(content.id)
+                  ? "text-zinc-400"
+                  : "text-zinc-900"
+              }`}
+            >
+              {content.company_name}
+            </div>
           </div>
         ))}
       </div>

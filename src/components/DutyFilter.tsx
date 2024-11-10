@@ -1,64 +1,23 @@
 "use client";
 
-import { dummyData } from "@/constant";
-import { ListType } from "@/type";
-import { useEffect, useState } from "react";
+import useGethDuties from "@/query/useGetDuties";
+import useDutyStore from "@/store/duty";
 import DutyFilterBox from "./DutyFilterBox";
 import DutyFilterChip from "./DutyFilterChip";
 
 export default function DutyFilter() {
-  const [checkedIds, setCheckedIds] = useState<number[]>([]);
-
-  const [secondDutyList, setSecondDutyList] = useState<ListType[]>([]);
-  const [thirdDutyList, setThirdDutyList] = useState<ListType[]>([]);
-
-  const [targetFirstDuty, setTargetFirstDuty] = useState<number>(0);
-  const [targetSecondDuty, setTargetSecondDuty] = useState<number>(0);
-
-  const [allId, setAllId] = useState<Record<number, number[][]>>({});
-
-  const firstDutyList = dummyData.filter(({ parent_id }) => parent_id === null);
-
-  useEffect(() => {
-    const ids: Record<number, number[][]> = {};
-
-    dummyData.forEach(({ id, parent_id }) => {
-      if (parent_id === null) {
-        ids[id] = [];
-      } else if (Object.keys(ids).includes(parent_id.toString())) {
-        ids[parent_id].push([id]);
-      } else {
-        Object.keys(ids).forEach((firstId) => {
-          const findIndex = ids[+firstId].findIndex(
-            ([secondId]) => secondId === parent_id
-          );
-          if (findIndex !== -1) {
-            ids[+firstId][findIndex] = [...ids[+firstId][findIndex], id];
-          }
-        });
-      }
-    });
-    setAllId(ids);
-  }, []);
-
-  useEffect(() => {
-    const filterSecondList = dummyData.filter(
-      ({ parent_id }) => parent_id === targetFirstDuty
-    );
-
-    setSecondDutyList(filterSecondList);
-  }, [targetFirstDuty]);
-
-  useEffect(() => {
-    const filterThirdList = dummyData.filter(
-      ({ parent_id }) => parent_id === targetSecondDuty
-    );
-    setThirdDutyList(filterThirdList);
-  }, [targetFirstDuty, targetSecondDuty]);
+  const {
+    firstDutyList,
+    filterSecondList,
+    filterThirdList,
+    dutyIds = {},
+  } = useGethDuties();
+  const { checkedIds, setTargetFirstDuty, setTargetSecondDuty, setCheckedIds } =
+    useDutyStore();
 
   const onClickFirstCheck = (value: string) => {
     const valueNum = Number(value);
-    const childrenIds = allId[valueNum].flat();
+    const childrenIds = dutyIds[valueNum].flat();
 
     if (checkedIds.includes(valueNum)) {
       const filterIds = checkedIds.filter(
@@ -74,7 +33,7 @@ export default function DutyFilter() {
     const valueNum = Number(value);
 
     const childrenIds =
-      allId[parent_id].find(([secondId]) => secondId === valueNum) || [];
+      dutyIds[parent_id]?.find(([secondId]) => secondId === valueNum) || [];
 
     if (checkedIds.includes(valueNum)) {
       const filterIds = checkedIds.filter(
@@ -88,8 +47,8 @@ export default function DutyFilter() {
 
   const onClickThirdCheck = (value: number, parent_id: number) => {
     const parentFirstId =
-      Object.keys(allId).find((firstId) => {
-        const index = allId[+firstId].findIndex(
+      Object.keys(dutyIds).find((firstId) => {
+        const index = dutyIds[+firstId]?.findIndex(
           ([secondId]) => secondId === parent_id
         );
         return index !== -1;
@@ -113,7 +72,7 @@ export default function DutyFilter() {
   return (
     <div className="flex border rounded-lg">
       <div className="flex flex-col w-[220px]">
-        {firstDutyList.map(({ id, name }) => (
+        {firstDutyList?.map(({ id, name }) => (
           <DutyFilterBox key={id} onClick={() => onClickFirstTarget(id)}>
             <input
               type="checkbox"
@@ -126,7 +85,7 @@ export default function DutyFilter() {
         ))}
       </div>
       <div className="flex flex-col w-[220px] border-x">
-        {secondDutyList.map(({ id, name, parent_id }) => (
+        {filterSecondList?.map(({ id, name, parent_id }) => (
           <DutyFilterBox key={id} onClick={() => setTargetSecondDuty(id)}>
             <input
               type="checkbox"
@@ -140,8 +99,8 @@ export default function DutyFilter() {
           </DutyFilterBox>
         ))}
       </div>
-      <div className="flex flex-wrap w-[240px] p-2 gap-2">
-        {thirdDutyList.map(({ id, name, parent_id }) => (
+      <div className="flex flex-wrap justify-start items-start w-[240px] p-2 gap-2">
+        {filterThirdList?.map(({ id, name, parent_id }) => (
           <DutyFilterChip
             key={id}
             name={name}

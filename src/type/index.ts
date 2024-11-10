@@ -7,6 +7,7 @@ export interface ListType {
 export interface RecruitContentType {
   id: number;
   company_name: string;
+  duty_ids: number[];
   end_time: string;
   start_time: string;
   title: string;

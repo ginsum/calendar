@@ -1,4 +1,5 @@
 import useDateStore from "@/store/date";
+import useDutyStore from "@/store/duty";
 import { RecruitContentType, RecruitDataType } from "@/type";
 import { padStartNum } from "@/util";
 import { useQuery } from "@tanstack/react-query";
@@ -17,6 +18,7 @@ export default function useGetRecruits() {
   });
 
   const { year, month } = useDateStore();
+  const { checkedIds } = useDutyStore();
 
   const checkCurrentMonth = (dateString: string) => {
     return (
@@ -28,20 +30,24 @@ export default function useGetRecruits() {
 
   const filterData = data?.reduce(
     (acc: RecruitDataType, curr: RecruitContentType) => {
-      if (checkCurrentMonth(curr.start_time)) {
-        const day = curr.start_time.slice(0, 10);
-        if (acc[day]) {
-          acc[day].push({ ...curr, isStart: true });
-        } else {
-          acc[day] = [{ ...curr, isStart: true }];
+      const filterDuty = curr.duty_ids.find((el) => checkedIds.includes(el));
+      if (!!filterDuty || checkedIds.length === 0) {
+        if (checkCurrentMonth(curr.start_time)) {
+          const day = curr.start_time.slice(0, 10);
+
+          if (acc[day]) {
+            acc[day].push({ ...curr, isStart: true });
+          } else {
+            acc[day] = [{ ...curr, isStart: true }];
+          }
         }
-      }
-      if (checkCurrentMonth(curr.end_time)) {
-        const day = curr.end_time.slice(0, 10);
-        if (acc[day]) {
-          acc[day].push({ ...curr, isStart: false });
-        } else {
-          acc[day] = [{ ...curr, isStart: false }];
+        if (checkCurrentMonth(curr.end_time)) {
+          const day = curr.end_time.slice(0, 10);
+          if (acc[day]) {
+            acc[day].push({ ...curr, isStart: false });
+          } else {
+            acc[day] = [{ ...curr, isStart: false }];
+          }
         }
       }
 

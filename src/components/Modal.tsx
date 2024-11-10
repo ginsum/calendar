@@ -13,10 +13,10 @@ export default function Modal({ data }: { data: RecruitDataType }) {
     contentList,
     date,
     index,
-    setContentList,
     setCloseModal,
     setIndex,
-    setDate,
+    setClickedIds,
+    setModalInfo,
   } = useModalStore();
   const onClose = () => setCloseModal();
   const content = contentList && contentList[index];
@@ -44,22 +44,30 @@ export default function Modal({ data }: { data: RecruitDataType }) {
   const onClickNextButton = () => {
     if ((contentList || []).length - 1 > index) {
       setIndex(index + 1);
+      setClickedIds(content?.id || 0);
     } else {
       const newDate = moveDate(date, 1);
-      setDate(newDate);
-      setContentList(data[newDate]);
-      setIndex(0);
+      setModalInfo({
+        sortList: data[newDate],
+        index: 0,
+        date: newDate,
+        id: content?.id || 0,
+      });
     }
   };
 
   const onClickPreviousButton = () => {
     if (index > 0) {
       setIndex(index - 1);
+      setClickedIds(content?.id || 0);
     } else {
       const newDate = moveDate(date, -1);
-      setDate(newDate);
-      setContentList(data[newDate]);
-      setIndex(data[newDate].length - 1);
+      setModalInfo({
+        sortList: data[newDate],
+        index: data[newDate].length - 1,
+        date: newDate,
+        id: content?.id || 0,
+      });
     }
   };
 
