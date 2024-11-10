@@ -1,17 +1,35 @@
 import { useEffect, useRef } from "react";
+import Image from "next/image";
+import useModalStore from "@/store/modal";
+import { formattedDate, moveDate } from "@/util";
+import { RecruitDataType } from "@/type";
 
-interface ModalProps {
-  onClose: () => void;
-}
-
-export default function Modal({ onClose }: ModalProps) {
+export default function Modal({ data }: { data: RecruitDataType }) {
   const modalRef = useRef<HTMLDivElement | null>(null);
+  const leftButtonRef = useRef<HTMLButtonElement | null>(null);
+  const rightButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  const {
+    contentList,
+    date,
+    index,
+    setContentList,
+    setCloseModal,
+    setIndex,
+    setDate,
+  } = useModalStore();
+  const onClose = () => setCloseModal();
+  const content = contentList && contentList[index];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         modalRef.current &&
-        !modalRef.current.contains(event.target as HTMLElement)
+        leftButtonRef.current &&
+        rightButtonRef.current &&
+        !modalRef.current.contains(event.target as HTMLElement) &&
+        !leftButtonRef.current.contains(event.target as HTMLElement) &&
+        !rightButtonRef.current.contains(event.target as HTMLElement)
       ) {
         onClose();
       }
@@ -23,24 +41,69 @@ export default function Modal({ onClose }: ModalProps) {
     };
   }, [onClose]);
 
+  const onClickNextButton = () => {
+    if ((contentList || []).length - 1 > index) {
+      setIndex(index + 1);
+    } else {
+      const newDate = moveDate(date, 1);
+      setDate(newDate);
+      setContentList(data[newDate]);
+      setIndex(0);
+    }
+  };
+
+  const onClickPreviousButton = () => {
+    if (index > 0) {
+      setIndex(index - 1);
+    } else {
+      const newDate = moveDate(date, -1);
+      setDate(newDate);
+      setContentList(data[newDate]);
+      setIndex(data[newDate].length - 1);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-between">
-      <div>앞</div>
+      <button ref={rightButtonRef} onClick={onClickPreviousButton}>
+        <Image
+          src="/arrow-left.svg"
+          alt="previous button"
+          width={40}
+          height={40}
+          priority
+        />
+      </button>
       <div
         ref={modalRef}
-        className="p-8 border w-[960px] min-h-[500px] shadow-lg rounded-md bg-white"
+        className="flex flex-col px-6 pt-6 pb-8 border w-[960px] min-h-[500px] max-h-[800px] shadow-lg rounded-md bg-white overflow-scroll"
       >
-        <button className="" onClick={onClose}>
-          X
-        </button>
-        <div className="text-center">
-          <h3 className="text-2xl font-bold text-gray-900">Modal Title</h3>
-          <div className="mt-2 px-7 py-3">
-            <p className="text-lg text-gray-500">Modal Body</p>
+        <div className="flex w-full justify-end">
+          <button className="text-xl text-zinc-400" onClick={onClose}>
+            X
+          </button>
+        </div>
+
+        <div className="text-zinc-800 px-7">
+          <div className="text-2xl font-bold mb-2">{content?.company_name}</div>
+          <h3 className="text-3xl font-bold mb-1">{content?.title}</h3>
+          <div className="text-base text-zinc-600">{`${formattedDate(
+            content?.start_time || ""
+          )} ~ ${formattedDate(content?.end_time || "")}`}</div>
+          <div className="mt-8 py-3">
+            <img src={content?.image_url} />
           </div>
         </div>
       </div>
-      <div>뒤</div>
+      <button ref={leftButtonRef} onClick={onClickNextButton}>
+        <Image
+          src="/arrow-right.svg"
+          alt="next button"
+          width={40}
+          height={30}
+          priority
+        />
+      </button>
     </div>
   );
 }
