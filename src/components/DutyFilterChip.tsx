@@ -9,7 +9,7 @@ export default function DutyFilterChip({
 }) {
   return (
     <div
-      className={`flex px-3 py-2 h-10 border rounded-2xl cursor-pointer ${
+      className={`flex h-10 px-3 py-2 border rounded-2xl cursor-pointer ${
         checked ? "bg-zinc-300" : "bg-white"
       }`}
       onClick={onClick}

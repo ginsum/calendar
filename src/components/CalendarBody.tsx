@@ -11,7 +11,7 @@ export default function CalendarBody() {
 
   const currentMonthDays = generatorCalendar(year)[month];
 
-  const { data } = useGetRecruits();
+  const { data, isPending } = useGetRecruits();
 
   return (
     <div className="flex flex-col w-full items-center justify-items-center gap-3">
@@ -22,6 +22,7 @@ export default function CalendarBody() {
             day={day.toLocaleString()}
             date={date}
             list={(data && data[date]) || []}
+            isPending={isPending}
           />
         ))}
       </div>

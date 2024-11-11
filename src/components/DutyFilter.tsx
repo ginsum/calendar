@@ -5,15 +5,24 @@ import useDutyStore from "@/store/duty";
 import DutyFilterBox from "./DutyFilterBox";
 import DutyFilterChip from "./DutyFilterChip";
 
+const arr = Array(5).fill(0);
+
 export default function DutyFilter() {
   const {
     firstDutyList,
-    filterSecondList,
-    filterThirdList,
+    secondDutyList,
+    thirdDutyList,
     dutyIds = {},
+    isPending,
   } = useGethDuties();
-  const { checkedIds, setTargetFirstDuty, setTargetSecondDuty, setCheckedIds } =
-    useDutyStore();
+  const {
+    checkedIds,
+    selectedFirstDuty,
+    selectedSecondDuty,
+    setSelectedFirstDuty,
+    setSelectedSecondDuty,
+    setCheckedIds,
+  } = useDutyStore();
 
   const onClickFirstCheck = (value: string) => {
     const valueNum = Number(value);
@@ -41,12 +50,19 @@ export default function DutyFilter() {
       );
       setCheckedIds(filterIds);
     } else {
-      setCheckedIds([...new Set([...checkedIds, ...childrenIds])]);
+      const filterId = dutyIds[parent_id].filter(
+        (el) => !checkedIds.includes(el[0])
+      );
+      if (filterId.length === 1) {
+        setCheckedIds([...new Set([...checkedIds, ...childrenIds, parent_id])]);
+      } else {
+        setCheckedIds([...new Set([...checkedIds, ...childrenIds])]);
+      }
     }
   };
 
   const onClickThirdCheck = (value: number, parent_id: number) => {
-    const parentFirstId =
+    const firstParentId =
       Object.keys(dutyIds).find((firstId) => {
         const index = dutyIds[+firstId]?.findIndex(
           ([secondId]) => secondId === parent_id
@@ -56,24 +72,51 @@ export default function DutyFilter() {
 
     if (checkedIds.includes(value)) {
       const filterIds = checkedIds.filter(
-        (id) => id !== value && id !== parent_id && id !== +parentFirstId
+        (id) => id !== value && id !== parent_id && id !== +firstParentId
       );
       setCheckedIds(filterIds);
     } else {
-      setCheckedIds([...checkedIds, value]);
+      const currentIds = dutyIds[+firstParentId].find(
+        (el) => el[0] === parent_id
+      );
+      const filterId = currentIds?.filter((el) => !checkedIds.includes(el));
+
+      if (filterId?.length === 2) {
+        const filterParentId = dutyIds[+firstParentId].filter(
+          (el) => !checkedIds.includes(el[0])
+        );
+        if (filterParentId.length === 1) {
+          setCheckedIds([...checkedIds, value, parent_id, +firstParentId]);
+        } else {
+          setCheckedIds([...checkedIds, value, parent_id]);
+        }
+      } else {
+        setCheckedIds([...checkedIds, value]);
+      }
     }
   };
 
   const onClickFirstTarget = (id: number) => {
-    setTargetFirstDuty(id);
-    setTargetSecondDuty(0);
+    setSelectedFirstDuty(id);
+    setSelectedSecondDuty(0);
   };
 
   return (
-    <div className="flex border rounded-lg">
-      <div className="flex flex-col w-[220px]">
+    <div className="flex border rounded-lg ">
+      <div className="flex flex-col w-[240px] h-[220px] overflow-scroll">
+        {isPending && (
+          <div className="flex flex-col w-full p-2 gap-2">
+            {arr.map((_el, index) => (
+              <div key={index} className="h-8 bg-zinc-100 rounded"></div>
+            ))}
+          </div>
+        )}
         {firstDutyList?.map(({ id, name }) => (
-          <DutyFilterBox key={id} onClick={() => onClickFirstTarget(id)}>
+          <DutyFilterBox
+            key={id}
+            isSelected={selectedFirstDuty === id}
+            onClick={() => onClickFirstTarget(id)}
+          >
             <input
               type="checkbox"
               onChange={(e) => onClickFirstCheck(e.target.value)}
@@ -84,9 +127,13 @@ export default function DutyFilter() {
           </DutyFilterBox>
         ))}
       </div>
-      <div className="flex flex-col w-[220px] border-x">
-        {filterSecondList?.map(({ id, name, parent_id }) => (
-          <DutyFilterBox key={id} onClick={() => setTargetSecondDuty(id)}>
+      <div className="flex flex-col w-[240px] border-x h-[220px] overflow-scroll">
+        {secondDutyList?.map(({ id, name, parent_id }) => (
+          <DutyFilterBox
+            key={id}
+            isSelected={selectedSecondDuty === id}
+            onClick={() => setSelectedSecondDuty(id)}
+          >
             <input
               type="checkbox"
               onChange={(e) =>
@@ -99,8 +146,8 @@ export default function DutyFilter() {
           </DutyFilterBox>
         ))}
       </div>
-      <div className="flex flex-wrap justify-start items-start w-[240px] p-2 gap-2">
-        {filterThirdList?.map(({ id, name, parent_id }) => (
+      <div className="flex flex-wrap gap-1 w-[280px] h-[220px] p-2 overflow-scroll">
+        {thirdDutyList?.map(({ id, name, parent_id }) => (
           <DutyFilterChip
             key={id}
             name={name}

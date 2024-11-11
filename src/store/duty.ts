@@ -2,13 +2,13 @@ import { create } from "zustand";
 
 interface DutyState {
   checkedIds: number[];
-  targetFirstDuty: number;
-  targetSecondDuty: number;
+  selectedFirstDuty: number;
+  selectedSecondDuty: number;
 }
 
 interface DutyActionType {
-  setTargetFirstDuty: (targetFirstDuty: number) => void;
-  setTargetSecondDuty: (targetSecondDuty: number) => void;
+  setSelectedFirstDuty: (selectedFirstDuty: number) => void;
+  setSelectedSecondDuty: (selectedSecondDuty: number) => void;
   setCheckedIds: (checkedIds: number[]) => void;
 }
 
@@ -16,10 +16,10 @@ interface UseDutyStoreType extends DutyState, DutyActionType {}
 
 const useDutyStore = create<UseDutyStoreType>((set) => ({
   checkedIds: [],
-  targetFirstDuty: 0,
-  targetSecondDuty: 0,
-  setTargetFirstDuty: (targetFirstDuty) => set({ targetFirstDuty }),
-  setTargetSecondDuty: (targetSecondDuty) => set({ targetSecondDuty }),
+  selectedFirstDuty: 0,
+  selectedSecondDuty: 0,
+  setSelectedFirstDuty: (selectedFirstDuty) => set({ selectedFirstDuty }),
+  setSelectedSecondDuty: (selectedSecondDuty) => set({ selectedSecondDuty }),
   setCheckedIds: (checkedIds) => set({ checkedIds }),
 }));
 

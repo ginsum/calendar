@@ -17,14 +17,14 @@ export default function useGethDuties() {
     queryFn: fetchDuties,
   });
 
-  const { targetFirstDuty, targetSecondDuty } = useDutyStore();
+  const { selectedFirstDuty, selectedSecondDuty } = useDutyStore();
 
   const firstDutyList = data?.filter(({ parent_id }) => parent_id === null);
-  const filterSecondList = data?.filter(
-    ({ parent_id }) => parent_id === targetFirstDuty
+  const secondDutyList = data?.filter(
+    ({ parent_id }) => parent_id === selectedFirstDuty
   );
-  const filterThirdList = data?.filter(
-    ({ parent_id }) => parent_id === targetSecondDuty
+  const thirdDutyList = data?.filter(
+    ({ parent_id }) => parent_id === selectedSecondDuty
   );
 
   const dutyIds = data?.reduce((acc: DutyIds, curr) => {
@@ -46,10 +46,9 @@ export default function useGethDuties() {
   }, {});
 
   return {
-    data,
     firstDutyList,
-    filterSecondList,
-    filterThirdList,
+    secondDutyList,
+    thirdDutyList,
     dutyIds: dutyIds,
     isPending,
     isError,
