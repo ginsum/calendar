@@ -1,5 +1,7 @@
 import { create } from "zustand";
 
+const nowDate = new Date();
+
 interface DateState {
   year: number;
   month: number;
@@ -15,9 +17,9 @@ interface DateActionType {
 interface UseDateStoreType extends DateState, DateActionType {}
 
 const useDateStore = create<UseDateStoreType>((set) => ({
-  year: 2024,
-  month: 10,
-  day: 1,
+  year: nowDate.getFullYear(),
+  month: nowDate.getMonth() + 1,
+  day: nowDate.getDay(),
   setYear: (year) => set({ year }),
   setMonth: (month) => set({ month }),
   setDay: (day) => set({ day }),

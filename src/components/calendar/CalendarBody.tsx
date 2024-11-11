@@ -2,9 +2,9 @@
 
 import useDateStore from "@/store/date";
 import useGetRecruits from "@/query/useGetRecruits";
-import { generatorCalendar } from "@/util";
+import { generatorCalendar } from "@/lib/util";
 import CalendarCell from "./CalendarCell";
-import ModalContainer from "./ModalContainer";
+import ModalContainer from "../modal/ModalContainer";
 
 export default function CalendarBody() {
   const { year, month } = useDateStore();

@@ -1,4 +1,4 @@
-import { weekDay } from "@/constant";
+import { weekDay } from "@/lib/constant";
 import CalendarMoveButton from "./CalendarMoveBtn";
 
 export default function CalendarHeader() {

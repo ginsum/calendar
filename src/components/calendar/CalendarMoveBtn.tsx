@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import useDateStore from "@/store/date";
-import { padStartNum } from "@/util";
+import { padStartNum } from "@/lib/util";
 
 export default function CalendarMoveButton() {
   const { year, month, setYear, setMonth } = useDateStore();

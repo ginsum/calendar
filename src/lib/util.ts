@@ -45,6 +45,9 @@ export const generatorCalendar = (year: number) => {
 };
 
 export const formattedDate = (date: string) => {
+  if (!date) {
+    return;
+  }
   const newDate = new Date(date);
 
   return new Intl.DateTimeFormat("ko-KR", {
@@ -64,7 +67,7 @@ export const moveDate = (date: string, moveNumber: number) => {
   newDate.setDate(newDate.getDate() + moveNumber);
 
   const year = newDate.getFullYear();
-  const month = String(newDate.getMonth() + 1).padStart(2, "0"); // 월은 0부터 시작하므로 1을 더해줌
+  const month = String(newDate.getMonth() + 1).padStart(2, "0");
   const day = String(newDate.getDate()).padStart(2, "0");
 
   return `${year}-${month}-${day}`;

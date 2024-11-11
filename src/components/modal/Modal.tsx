@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import useModalStore from "@/store/modal";
-import { formattedDate, moveDate } from "@/util";
+import { formattedDate, moveDate } from "@/lib/util";
 import { RecruitDataType } from "@/type";
 
 export default function Modal({ data }: { data: RecruitDataType }) {
@@ -47,6 +47,7 @@ export default function Modal({ data }: { data: RecruitDataType }) {
       setClickedIds(content?.id || 0);
     } else {
       const newDate = moveDate(date, 1);
+
       setModalInfo({
         sortList: data[newDate],
         index: 0,
@@ -62,6 +63,7 @@ export default function Modal({ data }: { data: RecruitDataType }) {
       setClickedIds(content?.id || 0);
     } else {
       const newDate = moveDate(date, -1);
+
       setModalInfo({
         sortList: data[newDate],
         index: data[newDate].length - 1,
@@ -84,7 +86,7 @@ export default function Modal({ data }: { data: RecruitDataType }) {
       </button>
       <div
         ref={modalRef}
-        className="flex flex-col px-6 pt-6 pb-8 border w-[960px] min-h-[500px] max-h-[800px] shadow-lg rounded-md bg-white overflow-scroll"
+        className="flex flex-col px-6 pt-6 pb-8 border w-[960px] h-[800px] shadow-lg rounded-md bg-white overflow-scroll"
       >
         <div className="flex w-full justify-end">
           <button className="text-xl text-zinc-400" onClick={onClose}>

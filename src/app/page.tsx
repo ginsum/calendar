@@ -1,6 +1,6 @@
-import CalendarBody from "@/components/CalendarBody";
-import CalendarHeader from "@/components/CalendarHeader";
-import DutyFilterContainer from "@/components/DutyFilterContainer";
+import CalendarBody from "@/components/calendar/CalendarBody";
+import CalendarHeader from "@/components/calendar/CalendarHeader";
+import DutyFilterContainer from "@/components/dutyFilter/DutyFilterContainer";
 import ReactQueryProvider from "@/query/Provider";
 
 export default function Home() {

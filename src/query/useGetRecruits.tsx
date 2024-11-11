@@ -1,7 +1,7 @@
 import useDateStore from "@/store/date";
 import useDutyStore from "@/store/duty";
 import { RecruitContentType, RecruitDataType } from "@/type";
-import { padStartNum } from "@/util";
+import { padStartNum } from "@/lib/util";
 import { useQuery } from "@tanstack/react-query";
 
 async function fetchRecruits() {
