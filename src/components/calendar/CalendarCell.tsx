@@ -17,8 +17,12 @@ export default function CalendarCell({
   isPending,
 }: CalendarCellProps) {
   const { setModalInfo, setIsOpen, clickedIds } = useModalStore();
-  const sortList: RecruitContentType[] =
-    list?.sort((a) => (a.isStart ? -1 : 0)) || [];
+
+  list?.sort((a, b) => {
+    if (a.isStart && !b.isStart) return -1;
+    if (!a.isStart && b.isStart) return 1;
+    return 0;
+  });
 
   return (
     <div className="w-[14.2857%] min-h-[180px] flex flex-col  border border-l-0 border-t-0 text-zinc-600 text-sm">
@@ -33,12 +37,17 @@ export default function CalendarCell({
         </div>
       )}
       <div className="flex flex-col p-2 gap-1">
-        {sortList?.map((content, index) => (
+        {list?.map((content, index) => (
           <div
             key={content.id}
             className="flex items-center gap-2 cursor-pointer"
             onClick={() => {
-              setModalInfo({ sortList, index, date, id: content.id });
+              setModalInfo({
+                sortList: list,
+                index,
+                date,
+                id: content.id,
+              });
               setIsOpen(true);
             }}
           >

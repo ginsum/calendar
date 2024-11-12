@@ -16,7 +16,7 @@ export default function CalendarBody() {
   return (
     <div className="flex flex-col w-full items-center justify-items-center gap-3">
       <div className="flex w-full flex-wrap">
-        {currentMonthDays.map(({ date, day }, index) => (
+        {currentMonthDays.map(({ date, day }) => (
           <CalendarCell
             key={date}
             day={day.toLocaleString()}

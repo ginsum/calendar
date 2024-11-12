@@ -44,7 +44,7 @@ export default function Modal({ data }: { data: RecruitDataType }) {
   const onClickNextButton = () => {
     if ((contentList || []).length - 1 > index) {
       setIndex(index + 1);
-      setClickedIds(content?.id || 0);
+      if (contentList) setClickedIds(contentList[index + 1]?.id || 0);
     } else {
       let newDate = "";
       let plusDay = 1;
@@ -62,7 +62,7 @@ export default function Modal({ data }: { data: RecruitDataType }) {
           sortList: data[newDate],
           index: 0,
           date: newDate,
-          id: content?.id || 0,
+          id: data[newDate][0]?.id || 0,
         });
       }
     }
@@ -71,7 +71,7 @@ export default function Modal({ data }: { data: RecruitDataType }) {
   const onClickPreviousButton = () => {
     if (index > 0) {
       setIndex(index - 1);
-      setClickedIds(content?.id || 0);
+      if (contentList) setClickedIds(contentList[index - 1]?.id || 0);
     } else {
       let newDate = "";
       let minusDay = -1;
@@ -90,7 +90,7 @@ export default function Modal({ data }: { data: RecruitDataType }) {
           sortList: data[newDate],
           index: data[newDate].length - 1,
           date: newDate,
-          id: content?.id || 0,
+          id: data[newDate][data[newDate].length - 1]?.id || 0,
         });
       }
     }
@@ -124,7 +124,7 @@ export default function Modal({ data }: { data: RecruitDataType }) {
             content?.start_time || ""
           )} ~ ${formattedDate(content?.end_time || "")}`}</div>
           <div className="mt-8 py-3">
-            <img src={content?.image_url} />
+            <img src={content?.image_url} alt="채용공고" />
           </div>
         </div>
       </div>
