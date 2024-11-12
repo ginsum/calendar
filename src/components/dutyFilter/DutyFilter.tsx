@@ -25,73 +25,81 @@ export default function DutyFilter() {
   } = useDutyStore();
 
   const onClickFirstCheck = (value: string) => {
-    const valueNum = Number(value);
-    const childrenIds = dutyIds[valueNum].flat();
+    const firstId = Number(value);
 
-    if (checkedIds.includes(valueNum)) {
+    let childrenIds: number[] = [];
+
+    Object.keys(dutyIds[firstId]).forEach((secondId) => {
+      childrenIds = [...childrenIds, ...dutyIds[firstId][+secondId], +secondId];
+    });
+
+    if (checkedIds.includes(firstId)) {
       const filterIds = checkedIds.filter(
-        (id) => !childrenIds.includes(id) && id !== valueNum
+        (id) => !childrenIds.includes(id) && id !== firstId
       );
       setCheckedIds(filterIds);
     } else {
-      setCheckedIds([...new Set([...checkedIds, ...childrenIds, valueNum])]);
+      setCheckedIds([...new Set([...checkedIds, ...childrenIds, firstId])]);
     }
   };
 
-  const onClickSecondCheck = (value: string, parent_id: number) => {
-    const valueNum = Number(value);
+  const onClickSecondCheck = (value: string, firstId: number) => {
+    const secondId = Number(value);
 
-    const childrenIds =
-      dutyIds[parent_id]?.find(([secondId]) => secondId === valueNum) || [];
+    const childrenIds = dutyIds[firstId][secondId];
 
-    if (checkedIds.includes(valueNum)) {
+    if (checkedIds.includes(secondId)) {
       const filterIds = checkedIds.filter(
-        (id) => !childrenIds.includes(id) && id !== valueNum && id !== parent_id
+        (id) => !childrenIds.includes(id) && id !== secondId && id !== firstId
       );
       setCheckedIds(filterIds);
     } else {
-      const filterId = dutyIds[parent_id].filter(
-        (el) => !checkedIds.includes(el[0])
+      const findNotCheckedId = Object.keys(dutyIds[firstId]).filter(
+        (el) => !checkedIds.includes(+el)
       );
-      if (filterId.length === 1) {
-        setCheckedIds([...new Set([...checkedIds, ...childrenIds, parent_id])]);
+      if (findNotCheckedId.length === 1) {
+        setCheckedIds([
+          ...new Set([...checkedIds, ...childrenIds, secondId, firstId]),
+        ]);
       } else {
-        setCheckedIds([...new Set([...checkedIds, ...childrenIds])]);
+        setCheckedIds([...new Set([...checkedIds, ...childrenIds, secondId])]);
       }
     }
   };
 
-  const onClickThirdCheck = (value: number, parent_id: number) => {
+  const onClickThirdCheck = (thirdId: number, secondId: number) => {
     const firstParentId =
       Object.keys(dutyIds).find((firstId) => {
-        const index = dutyIds[+firstId]?.findIndex(
-          ([secondId]) => secondId === parent_id
+        const findThirdId = Object.keys(dutyIds[+firstId]).find((secondId) =>
+          dutyIds[+firstId][+secondId].includes(thirdId)
         );
-        return index !== -1;
+
+        return !!findThirdId;
       }) || 0;
 
-    if (checkedIds.includes(value)) {
+    if (checkedIds.includes(thirdId)) {
       const filterIds = checkedIds.filter(
-        (id) => id !== value && id !== parent_id && id !== +firstParentId
+        (id) => id !== thirdId && id !== secondId && id !== +firstParentId
       );
       setCheckedIds(filterIds);
     } else {
-      const currentIds = dutyIds[+firstParentId].find(
-        (el) => el[0] === parent_id
+      const thirdIds = dutyIds[+firstParentId][secondId];
+      const findNotCheckedId = thirdIds?.filter(
+        (el) => !checkedIds.includes(el)
       );
-      const filterId = currentIds?.filter((el) => !checkedIds.includes(el));
 
-      if (filterId?.length === 2) {
-        const filterParentId = dutyIds[+firstParentId].filter(
-          (el) => !checkedIds.includes(el[0])
-        );
-        if (filterParentId.length === 1) {
-          setCheckedIds([...checkedIds, value, parent_id, +firstParentId]);
+      if (findNotCheckedId?.length === 1) {
+        const findNotCheckedParentId = Object.keys(
+          dutyIds[+firstParentId]
+        ).filter((secondId) => !checkedIds.includes(+secondId));
+
+        if (findNotCheckedParentId.length === 1) {
+          setCheckedIds([...checkedIds, thirdId, secondId, +firstParentId]);
         } else {
-          setCheckedIds([...checkedIds, value, parent_id]);
+          setCheckedIds([...checkedIds, thirdId, secondId]);
         }
       } else {
-        setCheckedIds([...checkedIds, value]);
+        setCheckedIds([...checkedIds, thirdId]);
       }
     }
   };
@@ -103,7 +111,7 @@ export default function DutyFilter() {
 
   return (
     <div className="flex border rounded-lg ">
-      <div className="flex flex-col w-[240px] h-[220px] overflow-scroll">
+      <div className="flex flex-col w-[240px] h-[200px] overflow-scroll">
         {isPending && (
           <div className="flex flex-col w-full p-2 gap-2">
             {arr.map((_el, index) => (
@@ -123,11 +131,11 @@ export default function DutyFilter() {
               value={id}
               checked={checkedIds.includes(id)}
             />
-            <div>{name}</div>
+            <div className="text-sm">{name}</div>
           </DutyFilterBox>
         ))}
       </div>
-      <div className="flex flex-col w-[240px] border-x h-[220px] overflow-scroll">
+      <div className="flex flex-col w-[240px] border-x h-[200px] overflow-scroll">
         {secondDutyList?.map(({ id, name, parent_id }) => (
           <DutyFilterBox
             key={id}
@@ -142,11 +150,11 @@ export default function DutyFilter() {
               value={id}
               checked={checkedIds.includes(id)}
             />
-            <div>{name}</div>
+            <div className="text-sm">{name}</div>
           </DutyFilterBox>
         ))}
       </div>
-      <div className="flex flex-wrap gap-1 w-[280px] h-[220px] p-2 overflow-scroll">
+      <div className="flex flex-wrap gap-1 w-[280px] h-[200px] p-2 overflow-scroll">
         {thirdDutyList?.map(({ id, name, parent_id }) => (
           <DutyFilterChip
             key={id}

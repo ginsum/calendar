@@ -30,8 +30,11 @@ export default function useGetRecruits() {
 
   const filterData = data?.reduce(
     (acc: RecruitDataType, curr: RecruitContentType) => {
+      // 해당 데이터가 체크된 직무인지 판단
       const filterDuty = curr.duty_ids.find((el) => checkedIds.includes(el));
+
       if (!!filterDuty || checkedIds.length === 0) {
+        // 시작일이 현재 달에 포함되어 있는지 판단
         if (checkCurrentMonth(curr.start_time)) {
           const day = curr.start_time.slice(0, 10);
 
@@ -41,6 +44,7 @@ export default function useGetRecruits() {
             acc[day] = [{ ...curr, isStart: true }];
           }
         }
+        // 종료일이 현재 달에 포함되어 있는지 판단
         if (checkCurrentMonth(curr.end_time)) {
           const day = curr.end_time.slice(0, 10);
           if (acc[day]) {

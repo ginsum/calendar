@@ -20,10 +20,10 @@ export const generatorCalendar = (year: number) => {
     const lastDay = new Date(year, month + 1, 0).getDay();
     const lastMonthLastDate = new Date(year, month, 0).getDate();
 
-    const lastMonthDays = [];
+    const lastAndNextMonthDays = [];
 
     for (let i = firstDay - 1; i >= 0; i--) {
-      lastMonthDays.push({
+      lastAndNextMonthDays.push({
         date: `${year}-${padStartNum(month)}-${padStartNum(
           lastMonthLastDate - i
         )}`,
@@ -38,7 +38,7 @@ export const generatorCalendar = (year: number) => {
       });
     }
 
-    months[month + 1] = [...lastMonthDays, ...days];
+    months[month + 1] = [...lastAndNextMonthDays, ...days];
   }
 
   return months;

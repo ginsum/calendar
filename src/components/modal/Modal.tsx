@@ -46,14 +46,25 @@ export default function Modal({ data }: { data: RecruitDataType }) {
       setIndex(index + 1);
       setClickedIds(content?.id || 0);
     } else {
-      const newDate = moveDate(date, 1);
+      let newDate = "";
+      let plusDay = 1;
 
-      setModalInfo({
-        sortList: data[newDate],
-        index: 0,
-        date: newDate,
-        id: content?.id || 0,
-      });
+      while (!newDate && plusDay < 30) {
+        const nextDate = moveDate(date, plusDay);
+        if (data[nextDate]) {
+          newDate = nextDate;
+        } else {
+          plusDay += 1;
+        }
+      }
+      if (newDate) {
+        setModalInfo({
+          sortList: data[newDate],
+          index: 0,
+          date: newDate,
+          id: content?.id || 0,
+        });
+      }
     }
   };
 
@@ -62,14 +73,26 @@ export default function Modal({ data }: { data: RecruitDataType }) {
       setIndex(index - 1);
       setClickedIds(content?.id || 0);
     } else {
-      const newDate = moveDate(date, -1);
+      let newDate = "";
+      let minusDay = -1;
 
-      setModalInfo({
-        sortList: data[newDate],
-        index: data[newDate].length - 1,
-        date: newDate,
-        id: content?.id || 0,
-      });
+      while (!newDate && minusDay > -30) {
+        const nextDate = moveDate(date, minusDay);
+        if (data[nextDate]) {
+          newDate = nextDate;
+        } else {
+          minusDay -= 1;
+        }
+      }
+
+      if (newDate) {
+        setModalInfo({
+          sortList: data[newDate],
+          index: data[newDate].length - 1,
+          date: newDate,
+          id: content?.id || 0,
+        });
+      }
     }
   };
 
